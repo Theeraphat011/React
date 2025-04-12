@@ -36,19 +36,21 @@ function App() {
       <div className="container mx-auto p-4">
          <h1 className="text-2xl font-bold text-center mb-4">TO-DO LISTS</h1>
          <div className="flex justify-center mb-4">
-            <input
-               type="text"
-               className="border border-gray-300 rounded px-4 py-2 w-1/2"
-               placeholder="Enter your activity here..."
-               value={text}
-               onChange={(e) => setText(e.target.value)}
-            />
-            <button
-               className="ml-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-               onClick={addLists}
-            >
-               Add
-            </button>
+            <div className="flex gap-10 border border-gray-300 rounded py-2 px-4">
+               <input
+                  type="text"
+                  className="focus:outline-none"
+                  placeholder="Enter your activity here..."
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+               />
+               <button
+                  className="ml-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  onClick={addLists}
+               >
+                  Add
+               </button>
+            </div>
          </div>
          <div className="space-y-2">
             {lists.map((list, index) => (
