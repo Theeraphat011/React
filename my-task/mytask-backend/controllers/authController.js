@@ -3,8 +3,8 @@ const User = require("../models/user");
 const generateToken = require("../utils/generateToken");
 
 exports.register = async (req, res) => {
-   const { name, email, password } = req.body;
-
+   const {name, email, password} = req.body; 
+   console.log(name, email, password)
    try {
       const existUser = await User.findOne({ email });
       if (existUser) return res.status(401).json({ msg: "Email exist" });
@@ -28,13 +28,13 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
    const { email, password } = req.body;
-
+   console.log(email, password)
    try {
       const user = await User.findOne({ email });
-      if (!user) return res.status(400).json({ msg: "User not found" });
+      if (!user) return res.status(401).json({ msg: "User not found" });
 
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return res.status(400).json({ msg: "Password error" });
+      if (!isMatch) return res.status(401).json({ msg: "Password error" });
 
       res.json({
          msg: "Login successful",
