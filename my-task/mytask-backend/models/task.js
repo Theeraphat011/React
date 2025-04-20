@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const taskSchma = new mongoose.Schema(
    {
       title: { type: String, required: true },
-      completed: { type: Boolean, default: false },
+      Description: { type: String },
+      completed: { type: String, required: true },
       user: { type: mongoose.Schema.ObjectId, ref: "user", require: true },
    },
    { timestamps: true }

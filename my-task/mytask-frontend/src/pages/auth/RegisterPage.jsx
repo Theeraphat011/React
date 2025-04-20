@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 const RegisterPage = () => {
    const [name, setName] = useState("");
@@ -10,6 +11,8 @@ const RegisterPage = () => {
    const [error, setError] = useState("");
    const navigate = useNavigate();
 
+   const {token} = useAuth();
+
    const handleSubmit = async (e) => {
       e.preventDefault();
 
@@ -17,14 +20,21 @@ const RegisterPage = () => {
          return setError("password not math");
       }
 
+      if (password.length < 8) {
+         return setError("Password must be least 8 characters long")
+      }
+
       try {
-         const res = await registerUser({ name, email, password });
-         console.log(res);
+         await registerUser({ name, email, password });
          navigate("/login");
       } catch (err) {
          setError("Failed to register");
       }
    };
+
+   if (token) {
+      return <Navigate to="/dashboard" replace />;
+   }
 
    return (
       <div className="grid gap-5 px-10 py-5 text-gray-700">
@@ -95,7 +105,7 @@ const RegisterPage = () => {
             </button>
          </form>
 
-         {error && <div>{error}</div>}
+         {error && <div className="text-center text-red-400 font-bold">{error}</div>}
          <p className="text-center mb-5">
             Already have an account?
             <Link

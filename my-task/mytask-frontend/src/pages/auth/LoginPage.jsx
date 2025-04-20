@@ -12,7 +12,7 @@ const LoginPage = () => {
    const navigate = useNavigate();
 
    if (token) {
-      return <Navigate to="/dashboard/task" replace />;
+      return <Navigate to="/dashboard" replace />;
    }
 
    const handleSubmit = async (e) => {
@@ -21,7 +21,9 @@ const LoginPage = () => {
       try {
          const userData = await loginUser({ email, password });
          Cookies.set("token", userData.token, { expires: 1 });
-         login(userData.token);
+         Cookies.set("username", userData.name, { expires: 1 });
+         login(userData.token, userData.name);
+         console.log(userData);
          navigate("/dashboard");
       } catch (err) {
          setError("Invalid email or password");
@@ -30,7 +32,6 @@ const LoginPage = () => {
 
    return (
       <div className="grid gap-5 px-10 py-5 text-gray-700">
-
          <div className="relative flex items-center justify-center">
             <hr className="w-full border-t-3 border-gray-400 absolute bottom-4 z-0" />
             <h2 className="relative z-10 text-center text-4xl mt-5 bg-white px-4 font-bold">
@@ -66,7 +67,7 @@ const LoginPage = () => {
                />
             </div>
 
-                        <button
+            <button
                type="submit"
                className="border-1 border-gray-400 mx-auto py-2 px-8 cursor-pointer"
             >
@@ -74,7 +75,7 @@ const LoginPage = () => {
             </button>
          </form>
 
-         {error && <div>{error}</div>}
+         {error && <div className="text-center text-red-500 font-bold">{error}</div>}
          <p className="text-center mb-5">
             Already have an account?
             <Link

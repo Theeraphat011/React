@@ -3,11 +3,11 @@ const User = require("../models/user");
 const generateToken = require("../utils/generateToken");
 
 exports.register = async (req, res) => {
-   const {name, email, password} = req.body; 
-   console.log(name, email, password)
+   const { name, email, password } = req.body;
+   console.log(name, email, password);
    try {
       const existUser = await User.findOne({ email });
-      if (existUser) return res.status(401).json({ msg: "Email exist" });
+      if (existUser) return res.status(409).json({ msg: "Email exist" });
 
       const hashPassword = await bcrypt.hash(password, 10);
 
@@ -17,7 +17,7 @@ exports.register = async (req, res) => {
          password: hashPassword,
       });
 
-      res.status(200).json({
+      res.status(201).json({
          msg: "Create user success",
          token: generateToken(newUser._id),
       });
@@ -28,17 +28,18 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
    const { email, password } = req.body;
-   console.log(email, password)
    try {
       const user = await User.findOne({ email });
       if (!user) return res.status(401).json({ msg: "User not found" });
 
+      console.log(user);
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(401).json({ msg: "Password error" });
 
       res.json({
          msg: "Login successful",
          token: generateToken(user._id),
+         name: user.name,
       });
    } catch (err) {
       res.status(400).json({ msg: "Server ERORR", err });

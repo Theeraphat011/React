@@ -1,49 +1,82 @@
-import { useEffect, useState } from "react";
-import { getTask } from "../../services/taskService";
+import { useState } from "react";
+import { createTask } from "../../services/taskService";
 import { useAuth } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
+import TaskHeader from "../../components/dashboard/Tasks/TaskHeader";
 
-
-const TaskPage = () => {
+const CreateTaskPage = () => {
+   const [title, setTitle] = useState("");
+   const [status, setStatus] = useState("pending");
+   const [successMessage, setSuccessMessage] = useState("");
+   const [error, setError] = useState("");
    const { token } = useAuth();
-   const [tasks, setTasks] = useState([]);
-   const [loading, setLoading] = useState(true);
 
-   useEffect(() => {
-      const fetchTasks = async () => {
-         try {
-            const data = await getTask(token);
-            setTasks(data);
-         } catch (err) {
-            console.error("Error loading data:", err);
-         } finally {
-            setLoading(false);
-         }
-      };
+   const taskData = {
+      title: title,
+      completed: status,
+   };
 
-      if (token) fetchTasks();
-   }, [token]);
+   const handleSubmit = async (e) => {
+      e.preventDefault();
 
-   if (loading) return <div>Loading</div>;
+      if (!title.trim()) {
+         setError("Please enter task name");
+         return;
+      }
 
-   console.log(tasks);
+      try {
+         await createTask(token, taskData);
+         setTitle("");
+         setSuccessMessage("Create task sucess");
+      } catch (err) {
+         console.error(err);
+         setError("Can't create task");
+      }
+   };
+
    return (
-      <div>
-         <h1>Tasks</h1>
-         {tasks.length === 0 ? (
-            <div>Task not found</div>
-         ) : (
-            <ul>
-               {tasks.map((task) => (
-                  <li key={task._id}>
-                     {task.title} - {task.complete ? "true" : "false"}
-                  </li>
-               ))}
-            </ul>
-         )}
+      <div className="bg-gray-100 w-full pt-6">
+         <TaskHeader/>
 
-         <Link to={'/dashboard'}>Go to dashboard</Link>
+         {error && <p className="text-red-500">{error}</p>}
+
+         {successMessage && <p className="text-green-500">{successMessage}</p>}
+
+
+
+         <form onSubmit={handleSubmit} className="space-y-4 mt-10 px-6">
+            <div>
+               <label className="block font-medium mb-1">Task Title</label>
+               <input
+                  type="text"
+                  className="w-full p-2 border rounded"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter your task"
+               />
+            </div>
+
+            <div>
+               <label className="block font-medium mb-1">Status</label>
+               <select
+                  className="w-full p-2 border rounded"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+               >
+                  <option value="pending">Pending</option>
+                  <option value="in-progress">In Progress</option>
+                  <option value="done">Done</option>
+               </select>
+            </div>
+
+            <button
+               type="submit"
+               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+               Save Task
+            </button>
+         </form>
       </div>
    );
 };
-export default TaskPage;
+
+export default CreateTaskPage;

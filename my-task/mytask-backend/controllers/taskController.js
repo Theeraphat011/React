@@ -10,10 +10,10 @@ exports.getTask = async (req, res) => {
 };
 
 exports.createTask = async (req, res) => {
-   const { title } = req.body;
-
+   const { title,completed } = req.body;
+   console.log(title,completed)
    try {
-      const newTask = await Task.create({ title, user: req.user });
+      const newTask = await Task.create({ title,completed, user: req.user });
       console.log(req.user);
       res.status(200).json(newTask);
    } catch (err) {
